@@ -11,11 +11,26 @@ recognition.maxAlternatives = 1;
 
 var diagnostic = document.querySelector('.output');
 var bg = document.querySelector('html');
-var hints = document.querySelector('.hints');
+var statusp = document.querySelector('.status');
+var button = document.getElementById('search');
+var listening = false;
 
 document.getElementById('search').onclick = function() {
-  recognition.start();
-  console.log('Ready to receive a query.');
+  if (!listening) {
+    listening = true;
+    recognition.start();
+    console.log('Ready to receive a query.');
+
+    this.innerHTML = '&#128066;';
+    statusp.textContent = 'Bezig met luisteren...';
+  }
+  else {
+    recognition.stop();
+    listening = false;
+
+    button.innerHTML = '&#127897;';
+    statusp.textContent = 'Klik om in te spreken en te zoeken:';
+  }
 }
 
 recognition.onresult = function(event) {
@@ -32,10 +47,16 @@ recognition.onresult = function(event) {
   console.log('Query received: ' + query);
   console.log('Confidence: ' + event.results[0][0].confidence);
 
+  button.innerHTML = '&#127757;';
+  statusp.textContent = 'Bezig met laden...';
+
   location.href = `https://www.visio.org/zoekresultaten?searchtext=${query}&searchmode=anyword`;
 }
 
 recognition.onspeechend = function() {
+  button.innerHTML = '&#127897;';
+  statusp.textContent = '';
+
   recognition.stop();
 }
 
